@@ -35,23 +35,29 @@ async def ebay(interaction: discord.Interaction, query: str, limit: int):
     if response.status_code == 200:
         data = response.json()
 
+        # store the total number of query results
         total_results = data['total']
 
+        # if total results is less than the limit, display the total number of results
         if total_results < limit:
             limit = total_results
 
-        reply_message = f'Total Results: {total_results}\nDisplaying first {limit} results:'
+        # initialize message to be sent
+        reply_message = f'Searched for: {query}\nTotal Results: {total_results}\nDisplaying first {limit} results:'
 
         item_index = 1
 
+        # display the name and price of each item
         for items in data['itemSummaries']:
             name = items['title']
             price = items['price']['value'] + ' ' + items['price']['currency']
             product_info = str(item_index) + '. ' + name + '\nPrice: ' + price
-            reply_message = reply_message + f'\n{product_info}'
+            itemLink = items['itemWebUrl']
+            linkString = f'[Click to View]({itemLink})'
+            reply_message = reply_message + f'\n{product_info}' + f' | {linkString}'
             item_index = item_index + 1
 
-        await interaction.response.send_message(reply_message)
+        await interaction.response.send_message(reply_message, suppress_embeds=True)
 
     else:
         print("Error:", response.status_code)
