@@ -36,6 +36,8 @@ Run the following line in terminal to install the necessary packages:
 
 Input the appropriate tokens into the config.py file and run bot.py
 
+## Example Screenshot
 
+Using "/ebay laptop 8":
 
-
+<img align="left" src="https://cdn.discordapp.com/attachments/901521649109712957/1140716224699965560/sample_output.png" height="500" width="500"/>
