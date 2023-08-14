@@ -1,7 +1,6 @@
 # Bycto-Discord-Bot
 
-### Author
-- [Andrew Mui](https://github.com/AMuiSBU)
+Author: [Andrew Mui](https://github.com/AMuiSBU)
 
 ## About
 
@@ -10,8 +9,8 @@ A personal discord bot used to browse eBay items swiftly and conveniently
 ## Features
 
 Bycto currently offers one command to search for items based on:
-> Query: Keyword(s) 
-> Limit: Number of items to display
+* Query: Keyword(s) 
+* Limit: Number of items to display
 
 ## Installation Requirements
 
@@ -36,4 +35,7 @@ Run the following line in terminal to install the necessary packages:
 > pip install -r requirements.txt
 
 Input the appropriate tokens into the config.py file and run bot.py
+
+
+
 
