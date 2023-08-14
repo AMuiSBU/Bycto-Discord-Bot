@@ -3,6 +3,7 @@ from discord.ext import commands
 from discord import app_commands
 from config import token
 from ebay_browser import ebay_api_call
+from requests_cache import CachedSession
 
 bot = commands.Bot(command_prefix='.', intents=discord.Intents.all())
 
@@ -36,25 +37,27 @@ async def ebayBrowse(interaction: discord.Interaction, query: str, limit: int):
             limit = total_results
 
         # Initialize message to be sent
-        reply_message = f'Searched for: {query}\nTotal Results: {total_results}\nDisplaying first {limit} results:'
+        embed = discord.Embed(title=f'Searched for: {query}',
+                              description=f'Total Results: {total_results}\nDisplaying first {limit} results:',
+                              colour=0x000000)
 
         item_index = 1
 
         # Display the name and price of each item
         for items in data['itemSummaries']:
-            name = items['title']
+            name = str(item_index) + '. ' + items['title']
             price = items['price']['value'] + ' ' + items['price']['currency']
-            product_info = str(item_index) + '. ' + name + '\nPrice: ' + price
             itemLink = items['itemWebUrl']
             linkString = f'[Click to View]({itemLink})'
-            reply_message = reply_message + f'\n{product_info}' + f' | {linkString}'
+            embed.add_field(name=name, value=f'\nPrice: ' + price + ' | ' + f'{linkString}', inline=False)
             item_index = item_index + 1
 
-        await interaction.response.send_message(reply_message, suppress_embeds=True)
+        await interaction.response.send_message(embed=embed)
 
     else:
         print("Error:", response.status_code)
         print(response.text)
         await interaction.response.send_message('Failure to obtain response')
+
 
 bot.run(token)
