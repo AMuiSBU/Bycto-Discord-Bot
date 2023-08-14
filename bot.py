@@ -20,8 +20,10 @@ async def on_ready():
 @bot.tree.command(name="ebay", description='Search for items on eBay')
 @app_commands.describe(query='Search query', limit='Number of results')
 async def ebayBrowse(interaction: discord.Interaction, query: str, limit: int):
+    # Create session with caching capabilities
+    session_cache = CachedSession('api_cache', expire_after=300)
     # Send request and store response
-    response = ebay_api_call(query, limit)
+    response = ebay_api_call(session_cache, query, limit)
     # Check for successful response
     if response.status_code == 200:
         data = response.json()
