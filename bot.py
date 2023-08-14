@@ -1,8 +1,8 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
-from config import token, ebay_token
-from requests_cache import CachedSession
+from config import token
+from ebay_browser import ebay_api_call
 
 bot = commands.Bot(command_prefix='.', intents=discord.Intents.all())
 
@@ -20,37 +20,25 @@ async def on_ready():
 @bot.tree.command(name="ebay", description='Search for items on eBay')
 @app_commands.describe(query='Search query', limit='Number of results')
 async def ebayBrowse(interaction: discord.Interaction, query: str, limit: int):
-    # Replace spaces in query with '+' for url
-    editedQuery = query.replace(" ", "+")
-    # Construct url string with query and limit input
-    url = f"https://api.ebay.com/buy/browse/v1/item_summary/search?q={editedQuery}&limit={limit}"
-    # Construct headers with ebay application token and set desired eBay marketplace location
-    headers = {
-        "Authorization": f"Bearer {ebay_token}",
-        "X-EBAY-C-MARKETPLACE-ID": "EBAY_US",
-    }
-
-    session = CachedSession('http_cache', backend='sqlite', expire_after=300)
-
     # Send request and store response
-    response = session.get(url, headers=headers)
+    response = ebay_api_call(query, limit)
     # Check for successful response
     if response.status_code == 200:
         data = response.json()
 
-        # store the total number of query results
+        # Store the total number of query results
         total_results = data['total']
 
-        # if total results is less than the limit, display the total number of results
+        # If total results is less than the limit, display the total number of results
         if total_results < limit:
             limit = total_results
 
-        # initialize message to be sent
+        # Initialize message to be sent
         reply_message = f'Searched for: {query}\nTotal Results: {total_results}\nDisplaying first {limit} results:'
 
         item_index = 1
 
-        # display the name and price of each item
+        # Display the name and price of each item
         for items in data['itemSummaries']:
             name = items['title']
             price = items['price']['value'] + ' ' + items['price']['currency']
